@@ -1,0 +1,4 @@
+.idea/*
+.idea/vcs.xml
+application/sample/sample
+*.tmp
