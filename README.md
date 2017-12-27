@@ -1,3 +1,3 @@
 # beego
-Auther: Jon Snow
+Author: Jon Snow
 First projects.
