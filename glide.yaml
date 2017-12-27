@@ -1,0 +1,4 @@
+package: github.com/JonSnow47/beego
+import:
+- package: github.com/astaxie/beego
+  version: v1.9.2
