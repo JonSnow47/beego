@@ -1,4 +1,4 @@
-package controllers
+package user
 
 import (
 	"github.com/JonSnow47/beego/application/template/models"
