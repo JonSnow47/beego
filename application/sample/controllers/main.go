@@ -20,7 +20,5 @@ func (this *MainController) Get() {
              Let's chat!
            </body>
 </html>`))
-
-
     this.ServeJSON()
 }
