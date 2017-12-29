@@ -4,11 +4,11 @@ import (
 	"github.com/astaxie/beego"
 )
 
-type MainController struct{
+type MainController struct {
 	beego.Controller
 }
 
-func (this *MainController) Get()  {
+func (this *MainController) Get() {
 	this.Ctx.ResponseWriter.Write([]byte(`
          <html>
            <head>
@@ -18,5 +18,6 @@ func (this *MainController) Get()  {
              Welcome to beego!
            </body>
 	</html>`))
+	this.Data["json"] = "the first portion"
 	this.ServeJSON()
 }
