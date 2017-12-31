@@ -11,6 +11,5 @@ func init() {
 
 	beego.Router("/user",&controllers.UserController{},"get:Hello")
 	beego.Router("/user/id", &controllers.UserController{},"get:UserID")
+
 }
-Malèna
-Fridéríc Chopin

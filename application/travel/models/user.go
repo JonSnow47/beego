@@ -5,9 +5,9 @@ import (
 )
 
 func Hello(name string) string {
-	return fmt.Sprintf("Hello %s!", name)
+	return fmt.Sprintf("Hello, %s!", name)
 }
 
-func ID() int {
-	return 47
+func ID(num int) int {
+	return num
 }

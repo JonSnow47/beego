@@ -18,6 +18,6 @@ func (this *UserController) Hello() {
 }
 
 func (this *UserController) UserID() {
-	this.Data["json"] = models.ID()
+	this.Data["json"] = models.ID(47)
 	this.ServeJSON()
 }
