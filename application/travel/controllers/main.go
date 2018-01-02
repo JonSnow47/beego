@@ -7,15 +7,7 @@ type MainController struct {
 }
 
 func(this *MainController) Get()  {
+	this.Ctx.WriteString("Hello World")
 	this.Data["json"] = "Welcome to Travel!"
-	this.Ctx.ResponseWriter.Write([]byte(`
-         <html>
-           <head>
-             <title>Chat</title>
-           </head>
-           <body>
-             Welcome to beego!
-           </body>
-	</html>`))
 	this.ServeJSON()
 }
