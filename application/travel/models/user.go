@@ -9,14 +9,13 @@ func Hello(name string) string {
 	return fmt.Sprintf("Hello, %s!", name)
 }
 
-type MessageServiceProvider struct{}
+type UserServiceProvider struct{}
 
-var MessageService *MessageServiceProvider
+var UserServer *UserServiceProvider
 
 type User struct {
-	ID   int64
-	Name string
-	Sex  bool
+	UserID   int64
+	UserName string
 }
 
 func init() {
@@ -24,13 +23,11 @@ func init() {
 }
 
 //Register
-func (this *MessageServiceProvider) Register() (int64, error) {
+func (this *UserServiceProvider) Register(info *User) (int64, error) {
 	o := orm.NewOrm()
-	o.Using("User")
+	o.Using("travel")		//use databases:travel
+
 	user := new(User)
-	user.ID = 44
-	user.Name = "Sansa Stack"
-	user.Sex = true
 	id, err := o.Insert(user)
 	if err != nil {
 		return 0, err
@@ -39,8 +36,6 @@ func (this *MessageServiceProvider) Register() (int64, error) {
 }
 
 //read user info
-func (this *MessageServiceProvider) UserInfo() {
-	info := User{ID: 44}
-	fmt.Sprint(info.ID, info.Name, info.Sex)
+func (this *UserServiceProvider) UserInfo() {
 	return
 }

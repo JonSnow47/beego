@@ -10,7 +10,7 @@ func init() {
 	beego.Router("/", &controllers.MainController{})
 
 	//user
-	beego.Router("/user", &controllers.UserController{}, "get:Hello")
+	beego.Router("/user", &controllers.UserController{}, "*:Hello")
 	beego.Router("/user/register", &controllers.UserController{}, "post:Register")
 	beego.Router("/user/info", &controllers.UserController{}, "get:UserInfo")
 }
