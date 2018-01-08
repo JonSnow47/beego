@@ -1,9 +1,8 @@
 package models
 
 import (
-	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 )
 
 func Hello(name string) string {
@@ -15,8 +14,9 @@ type UserServiceProvider struct{}
 var UserServer *UserServiceProvider
 
 type User struct {
-	ID   int64  `orm:"column(id);pk"`//`json:"id" orm:"column(id);pk"`
-	Name string `json:"name" orm:"column(name)"`
+	ID   int64  `orm:"column(id);pk"	json:"id"`
+	Name string `orm:"column(name)"	json:"name"`
+	Pass string `orm:"column(pass)"	json:"pass"`
 }
 
 func init() {
@@ -30,8 +30,7 @@ func TableName() string {
 func (this *UserServiceProvider) Register(info User) (int64, error) {
 	o := orm.NewOrm()
 	o.Using("user") //use databases:travel
-	//user := new(Travel)
-	logs.Debug(info)
+	//logs.Debug(info)
 	id, err := o.Insert(&info)
 	if err != nil {
 		return 0, err
@@ -40,11 +39,24 @@ func (this *UserServiceProvider) Register(info User) (int64, error) {
 }
 
 //read user info
-func (this *UserServiceProvider) ReadInfobyID(id int64) error{
+func (this *UserServiceProvider) ReadInfoByID(id int64) (User, error) {
 	o := orm.NewOrm()
 	o.Using("user")
-	u := &User{ID: id}
-	// 	err = Ormer.Read(u)
+
+	u := User{ID: id}
+	//sql := ("SELECT * FROM user id = ?", u)
 	err := o.Read(u)
-	return err
+	return u, err
+}
+
+//delete account
+func (this *UserServiceProvider) Delete(content User) (int64, error) {
+	o := orm.NewOrm()
+	o.Using("user")
+
+	id, err := o.Delete(&content)
+	if err != nil {
+		return 0, err
+	}
+	return id, err
 }

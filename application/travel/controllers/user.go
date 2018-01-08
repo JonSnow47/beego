@@ -16,29 +16,15 @@ func (this *UserController) Hello() {
 	this.ServeJSON()
 }
 
-/*
-func (this *UserController) Register() {
-
-	nickname := this.GetString("nickname")
-	if nickname == "" {
-		this.Ctx.WriteString("Please choose a nickname.")
-		return
-	} else if len(nickname) > 16 {
-		this.Ctx.WriteString("Please choose a shorter nickname.")
-	} else {
-		this.Ctx.WriteString(nickname)
-	}
-}
-*/
 func (this *UserController) Register() {
 	info := models.User{}
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &info)
 	if err != nil {
 		logs.Debug(info)
-		this.Data["json"] = "error"
+		this.Data["json"] = "Request error"
 	} else {
 		models.UserServer.Register(info)
-		this.Data["json"] = map[string]interface{}{"result": "Successful",
+		this.Data["json"] = map[string]interface{}{"result": "Register Success",
 			"id":   info.ID,
 			"name": info.Name}
 	}
@@ -46,29 +32,37 @@ func (this *UserController) Register() {
 }
 
 func (this *UserController) UserInfo() {
-	//info := models.User{}
-	var info models.User
-	id := info.ID
+	id := models.User{}.ID
+
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &id)
 	if err != nil {
-		this.Data["json"] = "error"
+		logs.Debug(id)
+		this.Data["json"] = "Request error"
 	} else {
-		info := models.UserServer.ReadInfobyID(id)
-		this.Data["json"] = info
+		content, err := models.UserServer.ReadInfoByID(id)
+		this.Data["json"] = content
+		if err != nil {
+			logs.Debug(content)
+			this.Data["json"] = "error"
+		} else {
+			this.Data["json"] = content
+		}
 	}
 	//this.Data["json"] = map[string]string{"content": "43"}
 	this.ServeJSON()
 }
-/*
-func (this *UserController) LogOff() {
-	id := models.User.ID
-	err := json.Unmarshal(this.Ctx.Input.RequestBody, &id)
-	if err != nil {
-		this.Data["json"] = "error"
 
+func (this *UserController) Delete() {
+	content := models.User{}
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &content)
+	if err != nil {
+		logs.Debug(content)
+		this.Data["json"] = "error"
+	} else {
+		models.UserServer.Delete(content)
+		this.Data["json"] = map[string]interface{}{"result":"delete success"}
 	}
-	objectid := models.AddOne(ob)
-	this.Data["json"] = "{\"ObjectId\":\"" + objectid + "\"}"
+	/*objectid := models.AddOne(ob)
+	this.Data["json"] = "{\"ObjectId\":\"" + objectid + "\"}"*/
 	this.ServeJSON()
 }
-*/
