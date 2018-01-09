@@ -32,14 +32,15 @@ func (this *UserController) Register() {
 }
 
 func (this *UserController) UserInfo() {
-	id := models.User{}.ID
-
-	err := json.Unmarshal(this.Ctx.Input.RequestBody, &id)
+	var Id struct{
+		id	int64
+	}
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &Id)
 	if err != nil {
-		logs.Debug(id)
+		logs.Debug(Id)
 		this.Data["json"] = "Request error"
 	} else {
-		content, err := models.UserServer.ReadInfoByID(id)
+		content, err := models.UserServer.ReadInfoByID(Id.id)
 		this.Data["json"] = content
 		if err != nil {
 			logs.Debug(content)
