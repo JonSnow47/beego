@@ -6,6 +6,7 @@ import (
 	"github.com/JonSnow47/beego/application/Fan/models"
 
 	"encoding/json"
+	"github.com/astaxie/beego/logs"
 )
 
 type MainController struct {
@@ -13,7 +14,17 @@ type MainController struct {
 }
 
 func (h *MainController) Home()  {
-	var article models.Article
-	article = models.Hot
-	h.Data["json"] = map[string]interface{}{article}
+	var id int64
+	err := json.Unmarshal(h.Ctx.Input.RequestBody,&id)
+	if err != nil {
+		logs.Debug(err)
+		h.Data["json"] = "Request error."
+	} else {
+		article,err := models.ArticleServer.Read(id)
+		if err != nil {
+			logs.Debug(err)
+			h.Data["json"] = map[string]interface{}{"Successful":article}
+			}
+		h.ServeJSON()
+		}
 }

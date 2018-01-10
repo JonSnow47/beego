@@ -9,30 +9,30 @@ type AdminServiceProvider struct{}
 var AdminServer *ArticleServiceProvider
 
 type Admin struct {
-	ID       int64
-	Name     string `orm:"column(name)"	json:"name"`
-	Password string `orm:"column(password)"	json:"password"`
-	State    bool   `orm:"column(state)"	json:"state"`
-	//Profile	Profile
+	ID       int64    `orm:column(id);pk`
+	Name     string   `orm:"column(name)"	json:"name"`
+	Password string   `orm:"column(password)"	json:"password"`
+	State    bool     `orm:"column(state)"	json:"state"`
+	//Profile  *Profile `orm:"rel(one)"`
 }
-
+/*
 type Profile struct {
 	Sex     string `orm:"column(sex)"	json:"sex"`
 	Age     int    `orm:"column(age)"	json:"age"`
 	Address string `orm:"column(address)"	json:"address"`
 	Email   string `orm:"column(email)"	json:"email"`
 }
-
+*/
 type Info struct {
 	Name    string `orm="column(name)"`
-	Sex     string `orm="column(sex)"`
-	Age     int    `orm="column(age)"`
-	Address string `orm="column(address)"`
-	Email   string `orm="column(email)"`
+	//Sex     string `orm="column(sex)"`
+	//Age     int    `orm="column(age)"`
+	//Address string `orm="column(address)"`
+	//Email   string `orm="column(email)"`
 }
 
 func init() {
-	orm.RegisterModel(new(Admin), new(Profile))
+	orm.RegisterModel(new(Admin)/*, new(Profile)*/)
 }
 
 func (this *ArticleServiceProvider) Create(admin Admin) error {
@@ -62,5 +62,5 @@ func (this *ArticleServiceProvider) AdminInfo(name string) (Info, error) {
 
 	var info Info
 	err := o.Raw("SELECT * FROM Fan.admin WHERE name=? AND state=1", name).QueryRow(&info)
-	return info,err
+	return info, err
 }
