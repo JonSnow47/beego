@@ -12,47 +12,48 @@ type AdminController struct {
 	beego.Controller
 }
 
-func (a *AdminController) Login() {
+func (a *AdminController) New() {
 	var admin models.Admin
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &admin)
 	if err != nil {
 		logs.Debug(admin)
 		a.Data["json"] = "Request error"
 	} else {
-		err := models.AdminServer.Create(admin)
+		err := models.AdminServer.Create(admin.Name, admin.Password)
 		if err != nil {
 			a.Data["json"] = "New false"
 		} else {
-			info, _ := models.AdminServer.AdminInfo(admin.Name)
-			a.Data["json"] = map[string]interface{}{"info": info}
+			a.Data["json"] = map[string]interface{}{"New admin": admin.Name}
 		}
 	}
 	a.ServeJSON()
 }
 
-func (a *AdminController) Signin() {
-	var Logininfo struct {
-		name     string
-		password string
+func (a *AdminController) Login() {
+	var Loginfo struct {
+		name     string `json:"name"`
+		password string `json:"password"`
 	}
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &Logininfo)
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &Loginfo)
 	if err != nil {
-		logs.Debug(Logininfo)
-		a.Data["json"] = logs.Debug
+		logs.Debug(Loginfo)
+		a.Data["json"] = "Request error."
 	} else {
-		err := models.AdminServer.Signin(Logininfo.name, Logininfo.password)
+		ok, err := models.AdminServer.Login(Loginfo.name, Loginfo.password)
 		if err != nil {
-			logs.Debug("Name or password error.")
-			a.Data["json"] = "SQL error."
+			logs.Debug(err)
+			a.Data["json"] = "Error."
+		} else if err == nil && ok == true {
+			a.Data["json"] = map[string]interface{}{"Log in": Loginfo.name}
 		} else {
-			a.Data["json"] = "Sign in."
+			a.Data["json"] = "Incorrect username or password."
 		}
 	}
 	a.ServeJSON()
 }
 
 /*
-func (a *AdminController) Signout() {
+func (a *AdminController) Logout() {
 
 }
 */

@@ -9,12 +9,13 @@ type AdminServiceProvider struct{}
 var AdminServer *ArticleServiceProvider
 
 type Admin struct {
-	ID       int64    `orm:column(id);pk`
-	Name     string   `orm:"column(name)"	json:"name"`
-	Password string   `orm:"column(password)"	json:"password"`
-	State    bool     `orm:"column(state)"	json:"state"`
+	ID       int64  `orm:column(id);pk`
+	Name     string `orm:"column(name)"	json:"name"`
+	Password string `orm:"column(password)"	json:"password"`
+	//State    bool   `orm:"column(state)"	json:"state"`
 	//Profile  *Profile `orm:"rel(one)"`
 }
+
 /*
 type Profile struct {
 	Sex     string `orm:"column(sex)"	json:"sex"`
@@ -24,7 +25,7 @@ type Profile struct {
 }
 */
 type Info struct {
-	Name    string `orm="column(name)"`
+	Name string `orm="column(name)"`
 	//Sex     string `orm="column(sex)"`
 	//Age     int    `orm="column(age)"`
 	//Address string `orm="column(address)"`
@@ -32,29 +33,35 @@ type Info struct {
 }
 
 func init() {
-	orm.RegisterModel(new(Admin)/*, new(Profile)*/)
+	orm.RegisterModel(new(Admin) /*, new(Profile)*/)
 }
 
-func (this *ArticleServiceProvider) Create(admin Admin) error {
+func (this *ArticleServiceProvider) Create(name string, password string) error {
 	o := orm.NewOrm()
 	//o.Using("admin")
 
-	sql := "INSERT INTO Fan.admin(name,password,state) VALUES(?,?,?)"
-	values := []interface{}{admin.Name, admin.Password, 1}
+	sql := "INSERT INTO Fan.admin(name,password) VALUES(?,?)"
+	values := []interface{}{name, password}
 	_, err := o.Raw(sql, values).Exec()
 
 	return err
 }
 
-func (this *ArticleServiceProvider) Signin(name string, pass string) error {
+func (this *ArticleServiceProvider) Login(name string, password string) (bool, error) {
 	o := orm.NewOrm()
 
-	err := o.Raw("SELECT pass FROM Fan.admin WHERE name=? LIMIT 1 LOCK IN SHARE MODE", name).QueryRow(&pass)
-
-	return err
+	var pass string
+	err := o.Raw("SELECT password FROM Fan.admin WHERE name=?", name).QueryRow(&pass)
+	if pass != password {
+		return false, nil
+	} else if pass == password {
+		return true, nil
+	} else {
+		return false, err
+	}
 }
 
-func (this *ArticleServiceProvider) Signout() {
+func (this *ArticleServiceProvider) Logout() {
 
 }
 func (this *ArticleServiceProvider) AdminInfo(name string) (Info, error) {

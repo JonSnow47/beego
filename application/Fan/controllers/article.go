@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/JonSnow47/beego/application/Fan/models"
 
+	"github.com/JonSnow47/beego/application/Fan/common"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
@@ -17,67 +18,66 @@ func (a *ArticleController) New() {
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &article)
 	if err != nil {
 		logs.Debug(article)
-		a.Data["json"] = "Request error"
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		err := models.ArticleServer.New(article)
+		err := models.ArticleServer.New(article.Title, article.Author, article.Class, article.Content)
 		if err != nil {
 			a.Data["json"] = "can not create article"
 		} else {
 			//info,_ := models.AdminServer.AdminInfo(admin.Name)
-			a.Data["json"] = map[string]interface{}{"Successful": article}
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: article.Title}
 		}
 	}
 	a.ServeJSON()
 }
 
 func (a *ArticleController) Read() {
-	var id int64
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &id)
+	var Id struct {
+		Id int64
+	}
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &Id)
 	if err != nil {
 		logs.Debug(err)
-		a.Data["json"] = "Request error."
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		article, err := models.ArticleServer.Read(id)
+		article, err := models.ArticleServer.Read(Id.Id)
 		if err != nil {
-			logs.Debug(err)
-			a.Data["json"] = map[string]interface{}{"Successful": article}
+			logs.Debug("ArticleServer.Read:", err)
+		} else {
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: article}
 		}
 	}
 	a.ServeJSON()
 }
 
-func (a *ArticleController) Updata() {
-	/*type massage struct {
-		Title	string
-		Class	string
-		Content	string
-	}*/
+func (a *ArticleController) Update() {
 	massage := models.Display{}
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &massage)
 	if err != nil {
 		logs.Debug(massage)
-		a.Data["json"] = "Request error."
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		err := models.ArticleServer.Updata(massage)
+		err := models.ArticleServer.Update(massage)
 		if err != nil {
-			a.Data["json"] = "Updata error."
+			a.Data["json"] = "Update error."
 		} else {
-			a.Data["json"] = map[string]interface{}{"Updata success": massage}
+			a.Data["json"] = map[string]interface{}{"Update success": massage}
 		}
 	}
 	a.ServeJSON()
 }
+
 func (a *ArticleController) Delete() {
-	type massage struct {
+	var massage struct {
 		Title  string
-		Auther string
+		Author string
 	}
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &massage{})
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &massage)
 	if err != nil {
-		logs.Debug(massage{})
-		a.Data["json"] = "Request error."
+		logs.Debug(massage)
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		err := models.ArticleServer.Delete(massage{}.Title, massage{}.Auther)
+		err := models.ArticleServer.Delete(massage.Title, massage.Author)
 		if err != nil {
 			a.Data["json"] = "Delete error."
 		} else {
