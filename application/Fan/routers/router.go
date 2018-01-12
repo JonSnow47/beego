@@ -1,9 +1,9 @@
 package routers
 
 import (
-	"github.com/JonSnow47/beego/application/Fan/controllers"
-
 	"github.com/astaxie/beego"
+
+	"github.com/JonSnow47/beego/application/Fan/controllers"
 )
 
 func init() {

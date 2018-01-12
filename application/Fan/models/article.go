@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-	"fmt"
 )
 
 type ArticleServiceProvider struct{}
@@ -30,6 +29,8 @@ type Display struct {
 func Init() {
 	orm.RegisterModel(new(Article))
 }
+
+//create
 func (this *ArticleServiceProvider) New(title string, author string, class string, content string) error {
 	o := orm.NewOrm()
 	raw := o.Raw("INSERT INTO Fan.article (title,author,class,content) VALUES(?,?,?,?)", title, author, class, content)
@@ -37,6 +38,7 @@ func (this *ArticleServiceProvider) New(title string, author string, class strin
 	return err
 }
 
+//update
 func (this *ArticleServiceProvider) Update(article Display) error {
 	o := orm.NewOrm()
 	sql := "UPDATE Fan.article SET title=? AND class=? AND content=? WHERE status=1"
@@ -45,16 +47,16 @@ func (this *ArticleServiceProvider) Update(article Display) error {
 	return err
 }
 
+//read
 func (this *ArticleServiceProvider) Read(id int64) (Display, error) {
 	o := orm.NewOrm()
 	var display Display
-	fmt.Println("dsd",id)
 	raw := o.Raw("SELECT title,author,class,content FROM Fan.article WHERE id= ? AND status=1", id)
-
 	err := raw.QueryRow(&display)
 	return display, err
 }
 
+//delete
 func (this *ArticleServiceProvider) Delete(title string, author string) error {
 	o := orm.NewOrm()
 	raw := o.Raw("UPDATE Fan.article SET status=0 WHERE title=? AND author=?", title, author)

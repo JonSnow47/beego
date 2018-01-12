@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "github.com/JonSnow47/beego/application/Fan/routers"
-	"github.com/JonSnow47/beego/application/Fan/orm"
-
 	"github.com/astaxie/beego"
+
+	"github.com/JonSnow47/beego/application/Fan/initialize"
+	_ "github.com/JonSnow47/beego/application/Fan/routers"
 )
 
 func main() {
@@ -12,6 +12,6 @@ func main() {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
-	orm.InitMysql()
+	initialize.InitMysql()
 	beego.Run()
 }

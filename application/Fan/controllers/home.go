@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
+
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 
 	"github.com/JonSnow47/beego/application/Fan/models"
-
-	"encoding/json"
-	"github.com/astaxie/beego/logs"
 )
 
 type MainController struct {
