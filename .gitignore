@@ -6,6 +6,5 @@ application/api_template
 application/Fan/common
 application/Fan/.DS_Store
 application/.DS_Store
-application/.DS_Store
-application/.DS_Store
 application/Fan/Fan
+application/mysql

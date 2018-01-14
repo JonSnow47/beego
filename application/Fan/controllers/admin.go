@@ -18,6 +18,7 @@ type AdminController struct {
 	beego.Controller
 }
 
+//insert a new admin
 func (a *AdminController) New() {
 	var admin models.Admin
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &admin)
@@ -28,7 +29,6 @@ func (a *AdminController) New() {
 		err := models.AdminServer.Create(admin.Name, admin.Password)
 		if err != nil {
 			logs.Debug(common.ErrMysqlQuery, err)
-
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
 		} else {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: admin.Name}
@@ -37,6 +37,7 @@ func (a *AdminController) New() {
 	a.ServeJSON()
 }
 
+//check admin info
 func (a *AdminController) Login() {
 	var loginfo struct {
 		Name     string `json:"name"`
@@ -52,7 +53,7 @@ func (a *AdminController) Login() {
 			logs.Debug(common.ErrMysqlQuery, err)
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
 		} else if err == nil && ok == true {
-			a.SetSession(common.SessionUserID, loginfo.Name)
+			//a.SetSession(common.SessionUserID, loginfo.Name)
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: loginfo.Name}
 		} else {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrLogin}

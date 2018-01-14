@@ -10,6 +10,7 @@ func Hello(name string) string {
 }
 
 type UserServiceProvider struct{}
+
 var UserServer *UserServiceProvider
 
 type User struct {

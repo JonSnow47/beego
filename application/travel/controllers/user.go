@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/JonSnow47/beego/application/travel/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/JonSnow47/beego/application/travel/models"
 )
 
 type UserController struct {

@@ -38,7 +38,6 @@ func init() {
 
 func (this *ArticleServiceProvider) Create(name string, password string) error {
 	o := orm.NewOrm()
-	//o.Using("admin")
 
 	sql := "INSERT INTO Fan.admin(name,password) VALUES(?,?)"
 	values := []interface{}{name, password}
