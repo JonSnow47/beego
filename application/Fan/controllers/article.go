@@ -24,7 +24,7 @@ func (a *ArticleController) New() {
 	} else {
 		err := models.ArticleServer.New(article.Title, article.Class, article.Content)
 		if err != nil {
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+			a.Data["json"] = map[string]interface{}{common.RespKeyErr: err}
 		} else {
 			id := models.ArticleServer.GetArticleID(article.Title)
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: id}
@@ -35,7 +35,7 @@ func (a *ArticleController) New() {
 
 func (a *ArticleController) Read() {
 	var article struct {
-		Id int64
+		Id int64 `json:"id"`
 	}
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &article)
 	if err != nil {
@@ -47,9 +47,9 @@ func (a *ArticleController) Read() {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrNoData}
 		} else if err != nil {
 			logs.Debug(common.ErrMysqlQuery, err)
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+			a.Data["json"] = map[string]interface{}{common.RespKeyErr: err}
 		} else {
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: article}
+			a.Data["json"] = map[string]interface{}{common.RespKeyData: article}
 		}
 	}
 	a.ServeJSON()
@@ -92,6 +92,28 @@ func (a *ArticleController) Delete() {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
 		} else {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+		}
+	}
+	a.ServeJSON()
+}
+
+func (a *ArticleController) View() {
+	var article struct {
+		Title string
+	}
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &article)
+	if err != nil {
+		logs.Debug(common.ErrInvalidParam, err)
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+	} else {
+		article, err := models.ArticleServer.View(article.Title)
+		if err == orm.ErrNoRows {
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrNoData}
+		} else if err != nil {
+			logs.Debug(common.ErrMysqlQuery, err)
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+		} else {
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: article}
 		}
 	}
 	a.ServeJSON()

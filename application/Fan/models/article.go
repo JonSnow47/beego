@@ -40,7 +40,7 @@ func (this *ArticleServiceProvider) New(title string, class string, content stri
 //update
 func (this *ArticleServiceProvider) Update(article Article) error {
 	o := orm.NewOrm()
-	sql := "UPDATE article SET title=?, class=?, content=? WHERE id=? AND status=1;"
+	sql := "UPDATE Fan.article SET title=?, class=?, content=? WHERE id=? AND status=1;"
 	values := []interface{}{article.Title, article.Class, article.Content, article.ID}
 	_, err := o.Raw(sql, values).Exec()
 	return err
@@ -66,6 +66,15 @@ func (this *ArticleServiceProvider) Delete(id int64) error {
 func (this *ArticleServiceProvider) GetArticleID(title string) int64 {
 	o := orm.NewOrm()
 	var id int64
-	o.Raw("SELECT id FROM article WHERE title=?", title).QueryRow(&id)
+	o.Raw("SELECT id FROM Fan.article WHERE title=?", title).QueryRow(&id)
 	return id
+}
+
+func (this *ArticleServiceProvider) View(title string) (Display, error) {
+	o := orm.NewOrm()
+	var display Display
+	raw := o.Raw("SELECT title,class,content FROM Fan.article WHERE title=? AND status=1", title)
+	o.Raw("UPDATE Fan.article SET views=views+1")
+	err := raw.QueryRow(&display)
+	return display, err
 }

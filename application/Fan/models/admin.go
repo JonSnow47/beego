@@ -2,6 +2,8 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
+
+	"github.com/JonSnow47/beego/application/Fan/utility"
 )
 
 type AdminServiceProvider struct{}
@@ -9,7 +11,7 @@ type AdminServiceProvider struct{}
 var AdminServer *ArticleServiceProvider
 
 type Admin struct {
-	ID       int64  `orm:column(id);pk`
+	ID       int64  `orm:"column(id)";pk`
 	Name     string `orm:"column(name)"	json:"name"`
 	Password string `orm:"column(password)"	json:"password"`
 	//State    bool   `orm:"column(state)"	json:"state"`
@@ -36,33 +38,36 @@ func init() {
 	orm.RegisterModel(new(Admin) /*, new(Profile)*/)
 }
 
-func (this *ArticleServiceProvider) Create(name string, password string) error {
+func (this *ArticleServiceProvider) Create(name string, pass string) error {
 	o := orm.NewOrm()
 
+	hash, err := utility.GenerateHash(pass)
+	if err != nil {
+		return err
+	}
+	password := string(hash)
+
 	sql := "INSERT INTO Fan.admin(name,password) VALUES(?,?)"
-	values := []interface{}{name, password}
-	_, err := o.Raw(sql, values).Exec()
+	_, err = o.Raw(sql, name, password).Exec()
 
 	return err
 }
 
 func (this *ArticleServiceProvider) Login(name string, password string) (bool, error) {
 	o := orm.NewOrm()
-
 	var pass string
 	err := o.Raw("SELECT password FROM Fan.admin WHERE name=?", name).QueryRow(&pass)
-	if pass != password {
-		return false, nil
-	} else if pass == password {
-		return true, nil
-	} else {
+	if err != nil {
 		return false, err
+	} else {
+		if utility.CompareHash([]byte(pass), password) {
+			return true, nil
+		} else {
+			return false, nil
+		}
 	}
 }
 
-func (this *ArticleServiceProvider) Logout() {
-
-}
 func (this *ArticleServiceProvider) AdminInfo(name string) (Info, error) {
 	o := orm.NewOrm()
 

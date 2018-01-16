@@ -23,14 +23,14 @@ func (a *AdminController) New() {
 	err := json.Unmarshal(a.Ctx.Input.RequestBody, &admin)
 	if err != nil {
 		logs.Debug(common.ErrInvalidParam, admin)
-		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+		a.Data["json"] = map[string]interface{}{common.RespKeyErr: err}
 	} else {
 		err := models.AdminServer.Create(admin.Name, admin.Password)
 		if err != nil {
 			logs.Debug(common.ErrMysqlQuery, err)
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+			a.Data["json"] = map[string]interface{}{common.RespKeyErr: err}
 		} else {
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: admin.Name}
+			a.Data["json"] = map[string]interface{}{common.RespKeyData: admin.Name}
 		}
 	}
 	a.ServeJSON()
@@ -38,22 +38,19 @@ func (a *AdminController) New() {
 
 //check admin info
 func (a *AdminController) Login() {
-	var loginfo struct {
-		Name     string `json:"name"`
-		Password string `json:"password"`
-	}
-	err := json.Unmarshal(a.Ctx.Input.RequestBody, &loginfo)
+	var admin models.Admin
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &admin)
 	if err != nil {
-		logs.Debug(common.ErrInvalidParam, loginfo)
-		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+		logs.Debug(common.ErrInvalidParam, admin)
+		a.Data["json"] = map[string]interface{}{common.RespKeyErr: common.ErrInvalidParam}
 	} else {
-		ok, err := models.AdminServer.Login(loginfo.Name, loginfo.Password)
+		ok, err := models.AdminServer.Login(admin.Name, admin.Password)
 		if err != nil {
 			logs.Debug(common.ErrMysqlQuery, err)
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+			a.Data["json"] = map[string]interface{}{common.RespKeyErr: common.ErrMysqlQuery}
 		} else if err == nil && ok == true {
-			//a.SetSession(common.SessionUserID, loginfo.Name)
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: loginfo.Name}
+			a.SetSession(common.SessionUserID, admin.Name)
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
 		} else {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrLogin}
 		}
@@ -61,8 +58,9 @@ func (a *AdminController) Login() {
 	a.ServeJSON()
 }
 
-/*
 func (a *AdminController) Logout() {
+	a.DestroySession()
+	a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
 
+	a.ServeJSON()
 }
-*/
