@@ -5,7 +5,6 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-
 	"github.com/astaxie/beego/session"
 
 	"github.com/JonSnow47/beego/application/Fan/common"

@@ -5,7 +5,8 @@ import (
 
 	"github.com/astaxie/beego/plugins/cors"
 
-	_ "github.com/JonSnow47/beego/application/Fan/initialize"
+	"github.com/JonSnow47/beego/application/Fan/initialize"
+	"github.com/JonSnow47/beego/application/Fan/filters"
 	_ "github.com/JonSnow47/beego/application/Fan/routers"
 )
 
@@ -21,6 +22,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: false,
 	}))
-	//initialize.InitMysql()
+	beego.InsertFilter("/*", beego.BeforeRouter, filters.LoginFilter)
+	initialize.InitMysql()
 	beego.Run()
 }
