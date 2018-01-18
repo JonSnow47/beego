@@ -62,9 +62,8 @@ func (this *ArticleServiceProvider) Login(name string, password string) (bool, e
 	} else {
 		if utility.CompareHash([]byte(pass), password) {
 			return true, nil
-		} else {
-			return false, nil
 		}
+		return false, nil
 	}
 }
 

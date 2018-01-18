@@ -2,38 +2,59 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/JonSnow47/beego/application/travel/common"
+	"github.com/JonSnow47/beego/application/travel/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"github.com/JonSnow47/beego/application/travel/models"
 )
 
 type UserController struct {
 	beego.Controller
 }
 
-func (this *UserController) Hello() {
-	this.Data["json"] = models.Hello("Jon Snow")
-	this.ServeJSON()
+func (u *UserController) Register() {
+	var user models.User
+	err := json.Unmarshal(u.Ctx.Input.RequestBody, &user)
+	if err != nil {
+		logs.Debug("Unmarshal", err)
+		u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+	} else {
+		err := models.UserServer.Register(user.Name, user.Pass)
+		if err != nil {
+			logs.Debug(err)
+			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: err}
+		} else {
+			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed,
+				"id":   user.ID,
+				"name": user.Name}
+		}
+	}
+	u.ServeJSON()
 }
 
-func (this *UserController) Register() {
-	info := models.User{}
-	err := json.Unmarshal(this.Ctx.Input.RequestBody, &info)
-	if err != nil {
-		logs.Debug(info)
-		this.Data["json"] = "Request error"
-	} else {
-		models.UserServer.Register(info)
-		this.Data["json"] = map[string]interface{}{"result": "Register Success",
-			"id":   info.ID,
-			"name": info.Name}
+func (u *UserController) Login() {
+	var user struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
-	this.ServeJSON()
+	err := json.Unmarshal(u.Ctx.Input.RequestBody, &user)
+	if err != nil {
+		logs.Debug("Unmarshal", err)
+		u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+	} else {
+		err := models.UserServer.Login(user.Username, user.Password)
+		if err != nil {
+			logs.Debug(err)
+			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: err}
+		} else {
+			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+		}
+	}
 }
 
 func (this *UserController) UserInfo() {
-	var Id struct{
-		id	int64
+	var Id struct {
+		id int64
 	}
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &Id)
 	if err != nil {
@@ -49,7 +70,6 @@ func (this *UserController) UserInfo() {
 			this.Data["json"] = content
 		}
 	}
-	//this.Data["json"] = map[string]string{"content": "43"}
 	this.ServeJSON()
 }
 
@@ -61,9 +81,14 @@ func (this *UserController) Delete() {
 		this.Data["json"] = "error"
 	} else {
 		models.UserServer.Delete(content)
-		this.Data["json"] = map[string]interface{}{"result":"delete success"}
+		this.Data["json"] = map[string]interface{}{"result": "delete success"}
 	}
-	/*objectid := models.AddOne(ob)
-	this.Data["json"] = "{\"ObjectId\":\"" + objectid + "\"}"*/
 	this.ServeJSON()
+}
+
+func (a *UserController) Logout() {
+	a.DestroySession()
+	a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+
+	a.ServeJSON()
 }
