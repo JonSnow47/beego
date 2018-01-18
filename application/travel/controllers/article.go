@@ -20,7 +20,7 @@ func (a *ArticleController) New() {
 		logs.Debug("Unmarshal", err)
 		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		err := models.ArticleServer.New(article.Title, article.Content)
+		err := models.ArticleServer.New(article, a.GetSession(common.SessionUserID).(string))
 		if err != nil {
 			logs.Debug(err)
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}

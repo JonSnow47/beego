@@ -11,22 +11,27 @@ var ArticleServer *ArticleServiceProvider
 
 type Article struct {
 	ID      int64     `orm:"column(id);pk"`
-	Uid     int64     `orm:"column(u_id)"`
-	Title   string    `orm:"column(title)""	json:"title"`
+	Title   string    `orm:"column(title)"		json:"title"`
+	Author  string    `orm:"column(author)"`
+	Class   string    `orm:"column(class)"		json:"class""`
 	Content string    `orm:"column(content)"	json:"content"`
 	Created time.Time `orm:"column(created)"`
-	status  bool      `orm:"column(status)"`
+	Status  bool      `orm:"column(status)"`
 }
 
 type View struct {
 	Title   string
+	Author  string
+	Class   string
 	Content string
+	Created string
 }
 
-func (this *ArticleServiceProvider) New(title string, content string) error {
+func (this *ArticleServiceProvider) New(article Article, author string) error {
 	o := orm.NewOrm()
-	sql := "INSERT INTO travel.article (title,content) VALUES(?,?)"
-	_, err := o.Raw(sql, title, content).Exec()
+	sql := "INSERT INTO travel.article (title,author,class,content,created) VALUES(?,?,?,?,?,?)"
+	created := time.Now()
+	_, err := o.Raw(sql, article.Title, author, article.Class, article.Content, created).Exec()
 	return err
 }
 

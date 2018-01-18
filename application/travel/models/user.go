@@ -16,11 +16,11 @@ type UserServiceProvider struct{}
 var UserServer *UserServiceProvider
 
 type User struct {
-	ID      int64     `orm:"column(userid);pk"	json:"id"`
+	ID      int64     `orm:"column(id);pk"	json:"id"`
 	Name    string    `orm:"column(name)"	json:"name"`
 	Pass    string    `orm:"column(pass)"	json:"pass"`
 	Created time.Time `orm:"column(created)"`
-	status  bool      `orm:"column(status)"`
+	Status  bool      `orm:"column(status)"`
 }
 
 func init() {
@@ -44,15 +44,15 @@ func (this *UserServiceProvider) Register(name string, pass string) error {
 }
 
 //Login
-func (this *UserServiceProvider) Login(name string, pass string) error {
+func (this *UserServiceProvider) Login(name string, password string) (bool,error) {
 	o := orm.NewOrm()
-	hash, err := utility.GenerateHash(pass)
+	var pass string
+	err := o.Raw("SELECT password FROM travel.admin WHERE name=?", name).QueryRow(&pass)
 	if err != nil {
-		return err
+		return false, err
 	}
-	password := string(hash)
-	_, err = o.Raw("SELECT * FROM travel.admin WHERE name=? AND password=? AND status=1", name, password).Exec()
-	return err
+	flag := utility.CompareHash([]byte(pass), password)
+	return flag, err
 }
 
 //read user info
