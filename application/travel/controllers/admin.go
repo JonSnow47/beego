@@ -25,7 +25,7 @@ func (a *AdminController) New() {
 		err := models.AdminServer.New(admin.Name, admin.Password)
 		if err != nil {
 			logs.Debug("MysqlERR", err)
-			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrAdminExists}
 		} else {
 			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed, common.RespKeyData: admin.Name}
 		}

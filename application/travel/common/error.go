@@ -10,7 +10,7 @@ const (
 
 	ErrInvalidUser   = "Invalid User"       // 用户不存在
 	ErrUserExists    = "User Exists"        // 用户已存在
-	ErrPassword         = "Incorrect password" // 密码错误
+	ErrPassword      = "Incorrect password" // 密码错误
 	ErrLoginRequired = "Login required"     // 未登录
 
 	ErrSession = "Session error" // Session 错误

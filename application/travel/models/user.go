@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-func Hello(name string) string {
-	return fmt.Sprintf("Hello, %s!", name)
-}
-
 type UserServiceProvider struct{}
 
 var UserServer *UserServiceProvider

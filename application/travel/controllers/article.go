@@ -52,11 +52,37 @@ func (a *ArticleController) Read() {
 }
 
 func (a *ArticleController) Update() {
-
+	var article models.Article
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &article)
+	if err != nil {
+		logs.Debug("Unmarshal", err)
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+	} else {
+		err := models.ArticleServer.Update(article)
+		if err != nil {
+			logs.Debug("MysqlERR", err)
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+		} else {
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+		}
+	}
 }
 
 func (a *ArticleController) Delete() {
-
+	var article models.Article
+	err := json.Unmarshal(a.Ctx.Input.RequestBody, &article)
+	if err != nil {
+		logs.Debug("Unmarshal", err)
+		a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
+	} else {
+		err := models.ArticleServer.Delete(article.ID)
+		if err != nil {
+			logs.Debug("MysqlERR", err)
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrMysqlQuery}
+		} else {
+			a.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+		}
+	}
 }
 
 func (a *ArticleController) View() {

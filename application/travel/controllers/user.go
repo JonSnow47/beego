@@ -6,6 +6,7 @@ import (
 	"github.com/JonSnow47/beego/application/travel/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego/orm"
 )
 
 type UserController struct {
@@ -42,12 +43,21 @@ func (u *UserController) Login() {
 		logs.Debug("Unmarshal", err)
 		u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrInvalidParam}
 	} else {
-		err := models.UserServer.Login(user.Username, user.Password)
+		flag, err := models.UserServer.Login(user.Username, user.Password)
 		if err != nil {
-			logs.Debug(err)
-			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: err}
+			if err == orm.ErrNoRows {
+				logs.Debug(err)
+				u.Data["json"] = map[string]interface{}{common.RespKeyStatus: err}
+			} else {
+				logs.Debug(err)
+				u.Data["json"] = map[string]interface{}{common.RespKeyStatus: err}
+			}
 		} else {
-			u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+			if flag {
+				u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrSucceed}
+			} else {
+				u.Data["json"] = map[string]interface{}{common.RespKeyStatus: common.ErrPassword}
+			}
 		}
 	}
 }

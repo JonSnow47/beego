@@ -19,14 +19,6 @@ type Article struct {
 	Status  bool      `orm:"column(status)"`
 }
 
-type View struct {
-	Title   string
-	Author  string
-	Class   string
-	Content string
-	Created string
-}
-
 func (this *ArticleServiceProvider) New(article Article, author string) error {
 	o := orm.NewOrm()
 	sql := "INSERT INTO travel.article (title,author,class,content,created) VALUES(?,?,?,?,?,?)"
@@ -35,9 +27,9 @@ func (this *ArticleServiceProvider) New(article Article, author string) error {
 	return err
 }
 
-func (this *ArticleServiceProvider) Read(id int64) (View, error) {
+func (this *ArticleServiceProvider) Read(id int64) (Article, error) {
 	o := orm.NewOrm()
-	var article View
+	var article Article
 	sql := "SELECT title,content FROM travel.article WHERE id=?"
 	err := o.Raw(sql, id).QueryRow(&article)
 	return article, err
@@ -45,20 +37,20 @@ func (this *ArticleServiceProvider) Read(id int64) (View, error) {
 
 func (this *ArticleServiceProvider) Update(article Article) error {
 	o := orm.NewOrm()
-	sql := "UPDATE travel.article SET title=? content=? WHERE status=1"
-	_, err := o.Raw(sql, article.Title, article.Content).Exec()
+	sql := "UPDATE travel.article SET title=? class=? content=? WHERE status=1"
+	_, err := o.Raw(sql, article.Title, article.Class, article.Content).Exec()
 	return err
 }
 
-func (this *ArticleServiceProvider) Delete() error {
+func (this *ArticleServiceProvider) Delete(id int64) error {
 	o := orm.NewOrm()
-	_, err := o.Raw("UPDATE travel.article status=0").Exec()
+	_, err := o.Raw("UPDATE travel.article SET status=0 WHERE id=?", id).Exec()
 	return err
 }
 
-func (this *ArticleServiceProvider) View(id int64) (View, error) {
+func (this *ArticleServiceProvider) View(id int64) (Article, error) {
 	o := orm.NewOrm()
-	var article View
+	var article Article
 	sql := "SELECT title,content FROM travel.article WHERE id=?"
 	err := o.Raw(sql, id).QueryRow(&article)
 	if err != nil && err != orm.ErrNoRows {
