@@ -11,7 +11,6 @@ func CompareHash(digest []byte, password string) bool {
 	return false
 }
 
-// bcrypto
 func GenerateHash(password string) ([]byte, error) {
 	hex := []byte(password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(hex, 10)

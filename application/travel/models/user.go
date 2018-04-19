@@ -1,14 +1,12 @@
 package models
 
 import (
-	"fmt"
 	"github.com/JonSnow47/beego/application/travel/utility"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
 
 type UserServiceProvider struct{}
-
 var UserServer *UserServiceProvider
 
 type User struct {

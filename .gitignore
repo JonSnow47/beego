@@ -1,12 +1,14 @@
-.idea/*
-.idea/vcs.xml
-application/sample/sample
-*.tmp
-application/api_template
-application/Fan/common
-application/Fan/.DS_Store
-application/.DS_Store
-application/Fan/Fan
-application/mysql
-application/.DS_Store
-application/.DS_Store
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# beego glide cache, RE: https://github.com/Masterminds/glide/issues/736
+.glide/
